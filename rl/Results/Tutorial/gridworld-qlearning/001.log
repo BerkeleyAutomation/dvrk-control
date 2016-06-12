@@ -1,0 +1,113 @@
+     0: >>> E[0:00:00]-R[?]: Return=   -0.9855, Steps=6.46, Features = 20
+   200: >>> E[0:00:00]-R[0:00:00]: Return=    -1.028, Steps=28.59, Features = 20
+   400: >>> E[0:00:00]-R[0:00:00]: Return=    0.4545, Steps=66.55, Features = 20
+   600: >>> E[0:00:00]-R[0:00:00]: Return=   -0.2671, Steps=28.11, Features = 20
+   800: >>> E[0:00:00]-R[0:00:00]: Return=    0.6736, Steps=27.36, Features = 20
+  1000: >>> E[0:00:00]-R[0:00:00]: Return=    0.6576, Steps=23.4, Features = 20
+  1200: >>> E[0:00:00]-R[0:00:00]: Return=    0.5975, Steps=23.5, Features = 20
+  1400: >>> E[0:00:00]-R[0:00:00]: Return=    0.6183, Steps=22.74, Features = 20
+  1600: >>> E[0:00:00]-R[0:00:00]: Return=    0.5767, Steps=24.26, Features = 20
+  1800: >>> E[0:00:00]-R[0:00:00]: Return=    0.5782, Steps=22.76, Features = 20
+  2000: >>> E[0:00:00]-R[0:00:00]: Return=      0.42, Steps=20.97, Features = 20
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+   200: >>> E[0:00:00]-R[0:00:01]: Return=         0, Steps= 2.0, Features = 400
+   400: >>> E[0:00:00]-R[0:00:01]: Return=         0, Steps= 2.0, Features = 400
+   600: >>> E[0:00:00]-R[0:00:01]: Return=         0, Steps= 2.0, Features = 400
+   800: >>> E[0:00:00]-R[0:00:01]: Return=         0, Steps= 2.0, Features = 400
+  1000: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+  1200: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+  1400: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+  1600: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+  1800: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+  2000: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:01]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:01]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:01]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:01]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:01]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:01]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:01
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: >>> E[0:00:00]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:00
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:04]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:04]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:04
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:03]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:03]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:03
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:02
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:02
+     0: >>> E[0:00:00]-R[?]: Return=         0, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:00]: Return=         0, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:02
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:00]: Return=         1, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:02
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:10]: Return=         1, Steps=   2, Features = 400
+     5: E[0:00:04]-R[0:00:04]: Return=         0, Steps=   2, Features = 400
+    10: >>> E[0:00:04]-R[0:00:00]: Return=         0, Steps= 1.0, Features = 400
+Total Experiment Duration 0:00:04
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:10]: Return=         1, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:10]: Return=         0, Steps= 1.0, Features = 400
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:09]: Return=         1, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:09]: Return=         0, Steps= 1.0, Features = 400
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:10]: Return=         1, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:10]: Return=         1, Steps= 2.0, Features = 400
+     4: E[0:00:05]-R[0:00:08]: Return=         0, Steps=   2, Features = 400
+     4: >>> E[0:00:05]-R[0:00:08]: Return=         1, Steps= 2.0, Features = 400
+     6: E[0:00:07]-R[0:00:05]: Return=         1, Steps=   2, Features = 400
+     6: >>> E[0:00:07]-R[0:00:05]: Return=         1, Steps= 2.0, Features = 400
+     8: E[0:00:10]-R[0:00:02]: Return=         1, Steps=   2, Features = 400
+     8: >>> E[0:00:10]-R[0:00:02]: Return=         1, Steps= 2.0, Features = 400
+    10: E[0:00:12]-R[0:00:00]: Return=         1, Steps=   2, Features = 400
+    10: >>> E[0:00:12]-R[0:00:00]: Return=         1, Steps= 2.0, Features = 400
+Total Experiment Duration 0:00:12
+     0: >>> E[0:00:00]-R[?]: Return=         1, Steps= 2.0, Features = 400
+     2: E[0:00:02]-R[0:00:10]: Return=         1, Steps=   2, Features = 400
+     2: >>> E[0:00:02]-R[0:00:10]: Return=         1, Steps= 2.0, Features = 400
