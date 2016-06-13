@@ -206,7 +206,7 @@ class DVRK3DDomain(Domain):
         
         print "[DVRK 3D] Moving to", self.get_frame_psm1(pos, rot=self.rot0)
 
-        if not self.sim:
+        if False:#not self.sim:
             self.psm1.move_cartesian_frame_linear_interpolation(self.get_frame_psm1(pos,self.rot0), speed=0.01)
             time.sleep(0.2)
             return self.getCurrentRobotState()
@@ -222,6 +222,7 @@ class DVRK3DDomain(Domain):
         if self.sim and len(self.visited_states) > self.simCap:
             print "!!!!!!!!!!!![DVRK 3D] Beginning Real Executions!!!!!!!!!"
             self.showExploration()
+            self.visited_states = []
             time.sleep(2)
             self.sim = False
 
