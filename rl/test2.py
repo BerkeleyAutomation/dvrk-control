@@ -43,8 +43,8 @@ def make_experiment(arm, exp_id=1, path="./Results/Tutorial/dvrk-planar"):
     # Representation
     kernel_width = (domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]) \
         / 10.0
-    representation = rlpy.Representations.KernelizediFDD(domain, sparsify=sparsify,
-                               kernel=rlpy.Representations.linf_triangle_kernel,
+    representation = KernelizediFDD(domain, sparsify=sparsify,
+                               kernel=linf_triangle_kernel,
                                kernel_args=[kernel_width],
                                active_threshold=active_threshold,
                                discover_threshold=discover_threshold,
