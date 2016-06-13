@@ -160,12 +160,12 @@ This is an example domain that uses rl to take the robot from a start
 pose to a target pose in 3D
 """
 class DVRK3DDomain(Domain):
-    def __init__(self, arm, src, target):
+    def __init__(self, arm, src, target, sim=False):
         """
         :param traj takes a sequence of robot states
         """
         self.statespace_limits  = np.array([[0.025, 0.1], [0.02, 0.08], [-0.13, -0.115]])
-        self.episodeCap         = 20
+        self.episodeCap         = 100
         self.continuous_dims    = [0,1,2]
         self.DimNames           = ['X', 'Y', 'Z']
         self.actions_num        = 6
@@ -173,6 +173,8 @@ class DVRK3DDomain(Domain):
         self.stepsize = 0.002
         self.tolerance = 0.004
         self.scalefactor = 100
+        self.simCap = 100000
+        self.sim = sim
         self.visited_states = []
         
 
@@ -199,35 +201,44 @@ class DVRK3DDomain(Domain):
         pos = self.psm1.get_current_cartesian_position().position[:3]
         return np.array([pos[0,0], pos[1,0], pos[2,0]])
 
-    def moveTo3DPos(self, x, y, z, fake=False):
+    def moveTo3DPos(self, x, y, z):
         pos = [x,y,z]
         
         print "[DVRK 3D] Moving to", self.get_frame_psm1(pos, rot=self.rot0)
 
-        if not fake:
+        if not self.sim:
             self.psm1.move_cartesian_frame_linear_interpolation(self.get_frame_psm1(pos,self.rot0), speed=0.01)
-
-        time.sleep(1)
+            time.sleep(0.2)
+            return self.getCurrentRobotState()
+        else:
+            #print np.array([x+np.random.randn(1,1)*0.001,y+np.random.randn(1,1)*0.001,z+np.random.randn(1,1)*0.001])
+            return np.array([  np.squeeze(x+np.random.randn(1,1)*0.0005) , np.squeeze(y+np.random.randn(1,1)*0.0005) , np.squeeze(z+np.random.randn(1,1)*0.0005) ])
 
     def step(self,a):
         print  "[DVRK 3D] Action Applied", a, "at state=", self.state, "time=", self.time
 
         self.time = self.time + 1
 
-        if a == 0:
-            self.moveTo3DPos(self.state[0]+self.stepsize, self.state[1], self.state[2])
-        elif a == 1:
-            self.moveTo3DPos(self.state[0]-self.stepsize, self.state[1], self.state[2])
-        elif a == 2:
-            self.moveTo3DPos(self.state[0], self.state[1]-self.stepsize, self.state[2])
-        elif a == 3:
-            self.moveTo3DPos(self.state[0], self.state[1]+self.stepsize, self.state[2])
-        elif a == 4:
-            self.moveTo3DPos(self.state[0], self.state[1], self.state[2]-self.stepsize)
-        elif a == 5:
-            self.moveTo3DPos(self.state[0], self.state[1], self.state[2]+self.stepsize)
+        if self.sim and len(self.visited_states) > self.simCap:
+            print "!!!!!!!!!!!![DVRK 3D] Beginning Real Executions!!!!!!!!!"
+            self.showExploration()
+            time.sleep(2)
+            self.sim = False
 
-        s = self.getCurrentRobotState()
+        if a == 0:
+            s = self.moveTo3DPos(self.state[0]+self.stepsize, self.state[1], self.state[2])
+        elif a == 1:
+            s = self.moveTo3DPos(self.state[0]-self.stepsize, self.state[1], self.state[2])
+        elif a == 2:
+            s = self.moveTo3DPos(self.state[0], self.state[1]-self.stepsize, self.state[2])
+        elif a == 3:
+            s = self.moveTo3DPos(self.state[0], self.state[1]+self.stepsize, self.state[2])
+        elif a == 4:
+            s = self.moveTo3DPos(self.state[0], self.state[1], self.state[2]-self.stepsize)
+        else:
+            s = self.moveTo3DPos(self.state[0], self.state[1], self.state[2]+self.stepsize)
+
+        
 
         self.state = np.copy(s)
 
