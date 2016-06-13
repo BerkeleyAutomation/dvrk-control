@@ -39,6 +39,7 @@ def make_experiment(arm, exp_id=1, path="./Results/Tutorial/dvrk-planar"):
     active_threshold = 0.01
     max_base_feat_sim = 0.5
     sparsify = 1
+    discover_threshold=88044
 
     # Representation
     kernel_width = (domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]) \
