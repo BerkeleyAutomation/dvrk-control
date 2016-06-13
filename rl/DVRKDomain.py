@@ -5,22 +5,35 @@ import numpy as np
 import time
 from copy import deepcopy
 import tfx
+import matplotlib.pyplot as plt
 
+
+
+
+"""
+This is an example domain that uses rl to take the robot from a start
+pose to a target pose in the plane
+"""
 class DVRKPlanarDomain(Domain):
-    def __init__(self, arm, u):
+    def __init__(self, arm, src, target):
         """
         :param traj takes a sequence of robot states
         """
         self.statespace_limits  = np.array([[0.025, 0.1], [0.02, 0.08]])
-        self.episodeCap         = len(u) - 1
+        self.episodeCap         = 30
         self.continuous_dims    = [0,1]
         self.DimNames           = ['X', 'Y']
-        self.actions_num        = 1
+        self.actions_num        = 4
         self.discount_factor    = 0.9
+        self.stepsize = 0.002
+        self.tolerance = 0.004
+        self.scalefactor = 100
+        self.visited_states = []
         
 
         self.psm1 = arm
-        self.reference = u
+        self.src = src
+        self.target = target
         self.time = 0
         
         self.z = -0.122
@@ -32,6 +45,7 @@ class DVRKPlanarDomain(Domain):
     def s0(self):
         self.home_robot()
         self.state = self.getCurrentRobotState()
+        self.time = 0
         print "[DVRK Planar] Initializing and Homing DVRK", self.state
         return self.state, self.isTerminal(), self.possibleActions()
 
@@ -47,32 +61,67 @@ class DVRKPlanarDomain(Domain):
         if not fake:
             self.psm1.move_cartesian_frame_linear_interpolation(self.get_frame_psm1(pos,self.rot0), speed=0.01)
 
-        time.sleep(2)
+        time.sleep(1)
 
     def step(self,a):
         print  "[DVRK Planar] Action Applied", a, "at state=", self.state, "time=", self.time
 
         self.time = self.time + 1
 
+        if a == 0:
+            self.moveToPlanarPos(self.state[0]+self.stepsize, self.state[1])
+        elif a == 1:
+            self.moveToPlanarPos(self.state[0]-self.stepsize, self.state[1])
+        elif a == 2:
+            self.moveToPlanarPos(self.state[0], self.state[1]-self.stepsize)
+        elif a == 3:
+            self.moveToPlanarPos(self.state[0], self.state[1]+self.stepsize)
+
+        """
         try:
-            self.moveToPlanarPos(self.reference[self.time]['x'], self.reference[self.time]['y'])
+            if a 
+            #self.moveToPlanarPos(self.reference[self.time]['x'], self.reference[self.time]['y'])
         except IndexError:
             print "[DVRK Planar] Index error happened"
+        """
 
         s = self.getCurrentRobotState()
 
+        self.state = np.copy(s)
+
         terminal = self.isTerminal()
 
-        return 0, s, terminal, self.possibleActions()
+        print self.possibleActions(), s, np.array([self.target['x'], self.target['y']]), -np.linalg.norm(s-np.array([self.target['x'], self.target['y']]))
 
-    def home_robot(self):
-        self.moveToPlanarPos(self.reference[0]['x'], self.reference[0]['y'])
+        reward = -self.scalefactor*np.linalg.norm(s-np.array([self.target['x'], self.target['y']]))**2
+
+        self.visited_states.append(np.copy(s))
+
+        return reward, s, terminal, self.possibleActions()
 
     def isTerminal(self):
-        if self.time == len(self.reference):
-            return True
-        else:
-            return False 
+        return (np.linalg.norm(self.state-np.array([self.target['x'], self.target['y']])) < self.tolerance)
+
+    def possibleActions(self):
+        rtn = []
+        if self.state[0]+self.stepsize < self.statespace_limits[0,1]:
+            rtn.append(0)
+
+        if self.state[0]-self.stepsize > self.statespace_limits[0,0]:
+            rtn.append(1) 
+
+        if self.state[1]-self.stepsize > self.statespace_limits[1,0]:
+            rtn.append(2) 
+
+        if self.state[1]+self.stepsize < self.statespace_limits[1,1]:
+            rtn.append(3)
+
+        print self.statespace_limits[0,1]
+
+        return rtn 
+
+    def home_robot(self):
+        self.moveToPlanarPos(self.src['x'], self.src['y'])
 
     def get_frame_psm1(self, pos, rot):
         """
@@ -95,107 +144,133 @@ class DVRKPlanarDomain(Domain):
         return result
 
 
+    def showExploration(self):
+        plt.figure()
+        plt.scatter([i[0] for i in self.visited_states],[i[1] for i in self.visited_states], color='k')
+        plt.scatter([self.src['x']],[self.src['y']], color='r')
+        plt.scatter([self.target['x']],[self.target['y']], color='b')
+        plt.show()
+
+
+
 
 
 """
-This is an example domain in which the dvrk "phantom" graps
-a point along a trajectory
+This is an example domain that uses rl to take the robot from a start
+pose to a target pose in 3D
 """
-
-class DVRKPhantomGraspDomain(Domain):
-    def __init__(self, arm, u):
+class DVRK3DDomain(Domain):
+    def __init__(self, arm, src, target):
         """
         :param traj takes a sequence of robot states
         """
-        self.statespace_limits  = np.array([[0.025, 0.1], [0.02, 0.08]])
-        self.episodeCap         = len(u) - 1
-        self.continuous_dims    = [0,1]
-        self.DimNames           = ['X', 'Y']
-        self.actions_num        = 2
+        self.statespace_limits  = np.array([[0.025, 0.1], [0.02, 0.08], [-0.13, -0.115]])
+        self.episodeCap         = 20
+        self.continuous_dims    = [0,1,2]
+        self.DimNames           = ['X', 'Y', 'Z']
+        self.actions_num        = 6
         self.discount_factor    = 0.9
+        self.stepsize = 0.002
+        self.tolerance = 0.004
+        self.scalefactor = 100
+        self.visited_states = []
         
 
         self.psm1 = arm
-        self.reference = u
+        self.src = src
+        self.target = target
         self.time = 0
         
         self.z = -0.122
         self.rot0 = [0.617571885272, 0.59489495214, 0.472153066551, 0.204392867261]
  
-        print "[DVRK Phantom Grasp] Creating Object"
-        super(DVRKPhantomGraspDomain,self).__init__()
+        print "[DVRK 3D] Creating Object"
+        super(DVRK3DDomain,self).__init__()
 
     def s0(self):
         self.home_robot()
         self.state = self.getCurrentRobotState()
         self.time = 0
-        print "[DVRK Phantom Grasp] Initializing and Homing DVRK", self.state
+        print "[DVRK 3D] Initializing and Homing DVRK", self.state, self.possibleActions()
+
         return self.state, self.isTerminal(), self.possibleActions()
 
     def getCurrentRobotState(self):
-        pos = self.psm1.get_current_cartesian_position().position[:2]
-        return np.array([pos[0,0], pos[1,0]])
+        pos = self.psm1.get_current_cartesian_position().position[:3]
+        return np.array([pos[0,0], pos[1,0], pos[2,0]])
 
-    def moveToPlanarPos(self, x, y, fake=False):
-        pos = [x,y,self.z]
+    def moveTo3DPos(self, x, y, z, fake=False):
+        pos = [x,y,z]
         
-        print "[DVRK Phantom Grasp] Moving to", self.get_frame_psm1(pos, rot=self.rot0)
+        print "[DVRK 3D] Moving to", self.get_frame_psm1(pos, rot=self.rot0)
 
         if not fake:
             self.psm1.move_cartesian_frame_linear_interpolation(self.get_frame_psm1(pos,self.rot0), speed=0.01)
 
-        time.sleep(2)
-
-    def cut(self, closed_angle=2.0, open_angle=80.0, close_time=2.5, open_time=2.35):
-        """
-        Closes and opens PSM1's grippers.
-        """
-        self.psm1.open_gripper(closed_angle)
-        time.sleep(close_time)
-        self.psm1.open_gripper(open_angle)
-        time.sleep(open_time)
+        time.sleep(1)
 
     def step(self,a):
-        print  "[DVRK Phantom Grasp] Action Applied", a, "at state=", self.state, "time=", self.time
+        print  "[DVRK 3D] Action Applied", a, "at state=", self.state, "time=", self.time
 
         self.time = self.time + 1
 
-        r = 0
-
-        """
-        Must only cut at certain points
-        """
-        if a == 1 and self.time == 2:
-            r = 1
-        elif a == 1 and self.time != 2:
-            r = -1
-
-        try:
-            self.moveToPlanarPos(self.reference[self.time]['x'], self.reference[self.time]['y'])
-
-            if a == 1:
-                print "Cutting"
-                self.cut()
-
-
-        except IndexError:
-            print "[DVRK Phantom Grasp] Index error happened"
+        if a == 0:
+            self.moveTo3DPos(self.state[0]+self.stepsize, self.state[1], self.state[2])
+        elif a == 1:
+            self.moveTo3DPos(self.state[0]-self.stepsize, self.state[1], self.state[2])
+        elif a == 2:
+            self.moveTo3DPos(self.state[0], self.state[1]-self.stepsize, self.state[2])
+        elif a == 3:
+            self.moveTo3DPos(self.state[0], self.state[1]+self.stepsize, self.state[2])
+        elif a == 4:
+            self.moveTo3DPos(self.state[0], self.state[1], self.state[2]-self.stepsize)
+        elif a == 5:
+            self.moveTo3DPos(self.state[0], self.state[1], self.state[2]+self.stepsize)
 
         s = self.getCurrentRobotState()
 
+        self.state = np.copy(s)
+
         terminal = self.isTerminal()
 
-        return r, s, terminal, self.possibleActions()
+        print self.possibleActions(), s, np.array([self.target['x'], self.target['y'], self.target['z']])
+        print -np.linalg.norm(s-np.array([self.target['x'], self.target['y'], self.target['z']]))
 
-    def home_robot(self):
-        self.moveToPlanarPos(self.reference[0]['x'], self.reference[0]['y'])
-        self.psm1.open_gripper(80.0)
+        reward = -self.scalefactor*np.linalg.norm(s-np.array([self.target['x'], self.target['y'], self.target['z']]))**2
+
+        self.visited_states.append(np.copy(s))
+
+        return reward, s, terminal, self.possibleActions()
 
     def isTerminal(self):
-        if self.time == len(self.reference):
-            return True
-        else:
-            return False 
+        return (np.linalg.norm(self.state-np.array([self.target['x'], self.target['y'], self.target['z']])) < self.tolerance)
+
+    def possibleActions(self):
+        rtn = []
+        if self.state[0]+self.stepsize < self.statespace_limits[0,1]:
+            rtn.append(0)
+
+        if self.state[0]-self.stepsize > self.statespace_limits[0,0]:
+            rtn.append(1) 
+
+        if self.state[1]-self.stepsize > self.statespace_limits[1,0]:
+            rtn.append(2) 
+
+        if self.state[1]+self.stepsize < self.statespace_limits[1,1]:
+            rtn.append(3)
+
+        if self.state[2]-self.stepsize > self.statespace_limits[2,0]:
+            rtn.append(4) 
+
+        if self.state[2]+self.stepsize < self.statespace_limits[2,1]:
+            rtn.append(5)
+
+        #print self.statespace_limits[0,1]
+
+        return rtn 
+
+    def home_robot(self):
+        self.moveTo3DPos(self.src['x'], self.src['y'], self.src['z'])
 
     def get_frame_psm1(self, pos, rot):
         """
@@ -218,3 +293,9 @@ class DVRKPhantomGraspDomain(Domain):
         return result
 
 
+    def showExploration(self):
+        plt.figure()
+        plt.scatter([i[0] for i in self.visited_states],[i[1] for i in self.visited_states], color='k')
+        plt.scatter([self.src['x']],[self.src['y']], color='r')
+        plt.scatter([self.target['x']],[self.target['y']], color='b')
+        plt.show()

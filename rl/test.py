@@ -9,7 +9,7 @@ A simple Grid-World.
 __author__ = "Robert H. Klein"
 from rlpy.Domains import GridWorld
 from rlpy.Agents import Q_Learning
-from rlpy.Representations import Tabular
+from rlpy.Representations import *
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
 import os
@@ -17,7 +17,7 @@ from DVRKDomain import *
 from robot import *
 
 
-def make_experiment(arm, exp_id=1, path="./Results/Tutorial/gridworld-qlearning"):
+def make_experiment(arm, exp_id=1, path="./Results/Tutorial/dvrk-planar"):
     """
     Each file specifying an experimental setup should contain a
     make_experiment function which returns an instance of the Experiment
@@ -30,34 +30,37 @@ def make_experiment(arm, exp_id=1, path="./Results/Tutorial/gridworld-qlearning"
     opt["exp_id"] = exp_id
     opt["path"] = path
     
-    u = [{'x': 0.0381381038389, 'y': 0.0348028884984}, {'x': 0.0510237465354, 'y': 0.0400495340115}, {'x': 0.0727044526597, 'y': 0.058846162056}]
-    domain = DVRKPhantomGraspDomain(arm, u)
+    #u = [{'x': 0.0381381038389, 'y': 0.0348028884984}, {'x': 0.0553447503026, 'y': 0.0523395529395}]
+    u = [{'x': 0.0381381038389, 'y': 0.0348028884984, 'z': -0.122}, {'x': 0.0478672848075, 'y': 0.0464112249337, 'z': -0.129155541415}]
+    domain = DVRK3DDomain(arm, u[0], u[1])
     opt["domain"] = domain
 
     # Representation
-    representation = Tabular(domain, discretization=20)
+    representation = RBF(domain, num_rbfs=100,resolution_max=25, resolution_min=25,
+                         const_feature=False, normalize=False, seed=2)
 
     # Policy
-    policy = eGreedy(representation, epsilon=0.5)
+    policy = eGreedy(representation, epsilon=0.1)
 
     # Agent
     opt["agent"] = Q_Learning(representation=representation, policy=policy,
                        discount_factor=domain.discount_factor,
-                       initial_learn_rate=0.1,
-                       learn_rate_decay_mode="boyan", boyan_N0=100,
-                       lambda_=0.)
+                       initial_learn_rate=1,
+                       learn_rate_decay_mode="boyan", boyan_N0=1000,
+                       lambda_=0.1)
     opt["checks_per_policy"] = 1
-    opt["max_steps"] = 10
-    opt["num_policy_checks"] = 5
+    opt["max_steps"] = 500
+    opt["num_policy_checks"] = 10
     experiment = Experiment(**opt)
-    return experiment
+    return experiment, domain
 
 if __name__ == '__main__':
     
     arm = robot("PSM1")
-    experiment = make_experiment(arm, 1)
+    experiment, domain = make_experiment(arm, 1)
     experiment.run(visualize_steps=False,  # should each learning step be shown?
                    visualize_learning=False,  # show policy / value function?
                    visualize_performance=1)  # show performance runs?
     experiment.plot()
     experiment.save()
+    domain.showExploration()
