@@ -62,7 +62,7 @@ def make_experiment(arm, exp_id=1, path="./Results/Tutorial/dvrk-planar"):
                        learn_rate_decay_mode="boyan", boyan_N0=1000,
                        lambda_=0.0)
     opt["checks_per_policy"] = 1
-    opt["max_steps"] = 100000
+    opt["max_steps"] = 10000
     opt["num_policy_checks"] = 100
     experiment = Experiment(**opt)
     return experiment, domain
