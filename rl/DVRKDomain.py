@@ -164,7 +164,7 @@ class DVRK3DDomain(Domain):
         """
         :param traj takes a sequence of robot states
         """
-        self.statespace_limits  = np.array([[0.025, 0.1], [0.02, 0.08], [-0.13, -0.115]])
+        self.statespace_limits  = np.array([[0.015, 0.1], [0.02, 0.08], [-0.135, -0.110]])
         self.episodeCap         = 100
         self.continuous_dims    = [0,1,2]
         self.DimNames           = ['X', 'Y', 'Z']
@@ -173,25 +173,23 @@ class DVRK3DDomain(Domain):
         self.stepsize = 0.002
         self.tolerance = 0.004
         self.scalefactor = 100
-        self.simCap = 100000
+        self.simCap = 20000
         self.sim = sim
         self.visited_states = []
-        
 
         self.psm1 = arm
         self.src = src
         self.target = target
         self.time = 0
         
-        self.z = -0.122
         self.rot0 = [0.617571885272, 0.59489495214, 0.472153066551, 0.204392867261]
  
         print "[DVRK 3D] Creating Object"
         super(DVRK3DDomain,self).__init__()
 
     def s0(self):
-        self.home_robot()
-        self.state = self.getCurrentRobotState()
+        self.state = self.home_robot()
+        #self.state = self.getCurrentRobotState()
         self.time = 0
         print "[DVRK 3D] Initializing and Homing DVRK", self.state, self.possibleActions()
 
@@ -206,23 +204,28 @@ class DVRK3DDomain(Domain):
         
         print "[DVRK 3D] Moving to", self.get_frame_psm1(pos, rot=self.rot0)
 
-        if False:#not self.sim:
+        if False:  #not self.sim:
             self.psm1.move_cartesian_frame_linear_interpolation(self.get_frame_psm1(pos,self.rot0), speed=0.01)
-            time.sleep(0.2)
-            return self.getCurrentRobotState()
+            time.sleep(1)
+            s = self.getCurrentRobotState()
         else:
             #print np.array([x+np.random.randn(1,1)*0.001,y+np.random.randn(1,1)*0.001,z+np.random.randn(1,1)*0.001])
-            return np.array([  np.squeeze(x+np.random.randn(1,1)*0.0005) , np.squeeze(y+np.random.randn(1,1)*0.0005) , np.squeeze(z+np.random.randn(1,1)*0.0005) ])
+            #print np.array([ np.squeeze(x) , np.squeeze(y) , np.squeeze(z) ])
+            s =  np.array([x , y , z ])
+
+        self.visited_states.append(np.copy(s))
+        return s
 
     def step(self,a):
         print  "[DVRK 3D] Action Applied", a, "at state=", self.state, "time=", self.time
 
         self.time = self.time + 1
 
+        print len(self.visited_states)
+
         if self.sim and len(self.visited_states) > self.simCap:
             print "!!!!!!!!!!!![DVRK 3D] Beginning Real Executions!!!!!!!!!"
             self.showExploration()
-            self.visited_states = []
             time.sleep(2)
             self.sim = False
 
@@ -240,7 +243,7 @@ class DVRK3DDomain(Domain):
             s = self.moveTo3DPos(self.state[0], self.state[1], self.state[2]+self.stepsize)
 
         
-
+        print s, self.state
         self.state = np.copy(s)
 
         terminal = self.isTerminal()
@@ -249,8 +252,6 @@ class DVRK3DDomain(Domain):
         print -np.linalg.norm(s-np.array([self.target['x'], self.target['y'], self.target['z']]))
 
         reward = -self.scalefactor*np.linalg.norm(s-np.array([self.target['x'], self.target['y'], self.target['z']]))**2
-
-        self.visited_states.append(np.copy(s))
 
         return reward, s, terminal, self.possibleActions()
 
@@ -282,7 +283,9 @@ class DVRK3DDomain(Domain):
         return rtn 
 
     def home_robot(self):
-        self.moveTo3DPos(self.src['x'], self.src['y'], self.src['z'])
+        s = self.moveTo3DPos(self.src['x'], self.src['y'], self.src['z'])
+        print "HOME" , s
+        return s
 
     def get_frame_psm1(self, pos, rot):
         """
