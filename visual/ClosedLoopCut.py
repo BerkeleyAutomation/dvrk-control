@@ -1,10 +1,10 @@
 import rospy, pickle, time
 from robot import *
-from geometry_msgs.msg import Pose
 import numpy as np
 import PyKDL
 import multiprocessing
 import tfx
+from geometry_msgs.msg import PointStamped, Point, PoseStamped, Pose
 #import fitplane
 from scipy.interpolate import interp1d
 #from shape_tracer import plot_points
@@ -19,12 +19,13 @@ This file contains utilities that are used for a trajectory following curve cutt
 
 class ClosedLoopCut(object):
 
-    def __init__(self, factor = 4, fname="../../calibration_data/gauze_pts.p"):
+    def __init__(self, factor = 4, fname="../../calibration_data/gauze_pts.p", simulate=False):
         self.psm1 = robot("PSM1")
         self.psm2 = robot("PSM2")
         self.pts = self.interpolation(self.load_robot_points(fname), factor)
         self.factor = factor
-        self.nextpos = rospy.Publisher("/cutting/waypoints", PoseStamped)
+        self.nextpos = rospy.Publisher("/cutting/next_position_cartesian", Pose)
+        self.simulate = simulate
 
     """
     Method homes the robot to a given start position
@@ -32,8 +33,12 @@ class ClosedLoopCut(object):
     def home_robot(self):
         pos = [0.023580864372, 0.00699340564912, -0.0485527311586]
         rot = [0.617571885272, 0.59489495214, 0.472153066551, 0.204392867261]
-        self.psm1.move_cartesian_frame(self.get_frame_psm1(pos,rot))
-        time.sleep(1)
+
+        if not self.simulate:
+            self.psm1.move_cartesian_frame(self.get_frame_psm1(pos,rot))
+            time.sleep(1)
+        else:
+            print "[ClosedLoopCut] Simulated Move to", self.get_frame_psm1(pos,rot)
 
     """
     Any initialization scripts go here
@@ -59,10 +64,13 @@ class ClosedLoopCut(object):
         """
         Closes and opens PSM1's grippers.
         """
-        self.psm1.open_gripper(closed_angle)
-        time.sleep(close_time)
-        self.psm1.open_gripper(open_angle)
-        time.sleep(open_time)
+        if not self.simulate:
+            self.psm1.open_gripper(closed_angle)
+            time.sleep(close_time)
+            self.psm1.open_gripper(open_angle)
+            time.sleep(open_time)
+        else:
+            print "[ClosedLoopCut] Simulated Cut"
 
     def load_robot_points(self, fname):
         lst = []
@@ -143,12 +151,17 @@ class ClosedLoopCut(object):
 
 
         for i in range(N-1):
-            print i
             self.cut()
             pos = self.pts[i,:]
             nextpos = self.pts[i+1,:]
             frame = self.get_frame_next(np.ravel(pos), np.ravel(nextpos), offset=0.004, angle = angles[i])
-            self.psm1.move_cartesian_frame(frame)
+            self.nextpos.publish(Pose(frame.position, frame.orientation))
+
+            if not self.simulate:
+                self.psm1.move_cartesian_frame(frame)
+            else:
+                print "[ClosedLoopCut] Simulated Move to", frame
+                time.sleep(1)
 
             curpt = np.ravel(np.array(self.psm1.get_current_cartesian_position().position))
             self.pts[i,:] = curpt
@@ -158,6 +171,6 @@ class ClosedLoopCut(object):
 if __name__ == "__main__":
 
 
-    c = ClosedLoopCut()
+    c = ClosedLoopCut(simulate=True)
 
     c.doTask()
