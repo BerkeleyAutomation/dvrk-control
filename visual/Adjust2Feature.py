@@ -19,7 +19,7 @@ import tfx
 
 class Adjust2Feature:
 
-    def __init__(self):
+    def __init__(self, offset=(0,0)):
         self.right_image = None
         self.left_image = None
         self.rcounter = 0
@@ -28,8 +28,10 @@ class Adjust2Feature:
         self.bridge = cv_bridge.CvBridge()
         self.block = False
 
+        self.offset = offset
+
         self.LOWERB = np.array([0,0,0])
-        self.UPPERB = np.array([70,70,70])
+        self.UPPERB = np.array([80,80,80])
 
         self.camera_matrix = self.load_camera_matrix()
 
@@ -90,6 +92,9 @@ class Adjust2Feature:
 
         V = np.array((int(V[0]/V[2]), int(V[1]/V[2])))
 
+        V[0] = V[0] + self.offset[0]
+        V[1] = V[1] + self.offset[1]
+
         return V
 
     def get_line_mask(self, position=None, tol=20):
@@ -134,11 +139,10 @@ class Adjust2Feature:
             return closest, dist(closest, pix)
 
 
-"""
 if __name__ == "__main__":
 
 
-    a = Adjust2Feature()
+    a = Adjust2Feature((-250,-89))
     pt = a.get_pixel_from3D()
 
     img = np.copy(a.left_image)
@@ -154,5 +158,6 @@ if __name__ == "__main__":
     plt.show()
 
     plt.figure()
-"""
+
+
 
