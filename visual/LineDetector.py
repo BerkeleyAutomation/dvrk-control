@@ -128,9 +128,11 @@ class LineDetector(object):
         cur_position, next_position = np.array(cur_position), np.array(next_position)
         delta = next_position - cur_position
         slope = np.array((delta[0], delta[1]))
-        slope =  slope / np.linalg.norm(slope)
+        if np.linalg.norm(slope) != 0:
+            slope =  slope / np.linalg.norm(slope)
         perp_slope = np.array((-delta[1], delta[0]))
-        perp_slope = perp_slope / np.linalg.norm(perp_slope)
+        if np.linalg.norm(perp_slope) != 0:
+            perp_slope = perp_slope / np.linalg.norm(perp_slope)
         pts = []
         # points defining the corners of a rectangle
         pts.append(next_position + perp_slope * rect_width / 2)
@@ -203,6 +205,8 @@ class LineDetector(object):
                 best_center = center
                 
         center_of_mass = best_center
+        if center_of_mass = None:
+            return -1 # Cannot find line
         line_vector = center_of_mass - np.array(cur_position)
         planned_vector = np.array(next_position) - np.array(cur_position)
 
