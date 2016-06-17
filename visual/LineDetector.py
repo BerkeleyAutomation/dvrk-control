@@ -205,7 +205,7 @@ class LineDetector(object):
                 best_center = center
                 
         center_of_mass = best_center
-        if center_of_mass = None:
+        if center_of_mass == None:
             return -1 # Cannot find line
         line_vector = center_of_mass - np.array(cur_position)
         planned_vector = np.array(next_position) - np.array(cur_position)
@@ -226,8 +226,10 @@ class LineDetector(object):
         rel = self.detect_relative_position(cur_position, next_position, left_gray, ratio, show_plots=self.show_plots)
         if rel > 0:
             return 1
-        else:
+        elif rel == 0:
             return 0
+        else:
+            return -1
 
 
 
