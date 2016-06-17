@@ -10,7 +10,6 @@ from scipy.interpolate import interp1d
 #from shape_tracer import plot_points
 from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
-from Adjust2Feature import Adjust2Feature
 
 """
 This file contains utilities that are used for a trajectory following curve cutting model.
@@ -36,7 +35,7 @@ class ClosedLoopCut(object):
 
         if not self.simulate:
             self.psm1.move_cartesian_frame(self.get_frame_psm1(pos,rot))
-            time.sleep(1)
+            time.sleep(10)
         else:
             print "[ClosedLoopCut] Simulated Move to", self.get_frame_psm1(pos,rot)
 
