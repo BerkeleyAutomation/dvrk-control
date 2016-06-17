@@ -213,15 +213,24 @@ class LineDetector(object):
                 
         center_of_mass = best_center
         if center_of_mass == None:
-            return -1 # Cannot find line
+            return float('inf') # Cannot find line
         line_vector = center_of_mass - np.array(cur_position)
         planned_vector = np.array(next_position) - np.array(cur_position)
 
         cpdt = np.cross(line_vector, planned_vector)
+
+        line_vector /= np.linalg.norm(line_vector)
+        planned_vector /= np.linalg.norm(planned_vector)
+
+        dpdt = np.dot(line_vector, planned_vector)
+        theta = np.arccos(dpdt) * 180 / np.pi
+        if theta < 20:
+            return 0
+
         if cpdt < 0:
             return 1 # line is to the right
         else:
-            return 0 # line is to the left
+            return -1 # line is to the left
 
     """
     Queries two points to find the left/right
