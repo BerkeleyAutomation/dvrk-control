@@ -127,6 +127,13 @@ class LineDetector(object):
         """
         cur_position, next_position = np.array(cur_position), np.array(next_position)
         delta = next_position - cur_position
+
+        factor = 80 / np.linalg.norm(np.array(delta))
+        next_position = cur_position + factor * np.array(delta)
+
+        cur_position, next_position = np.array(cur_position), np.array(next_position)
+        delta = next_position - cur_position
+
         slope = np.array((delta[0], delta[1]))
         if np.linalg.norm(slope) != 0:
             slope =  slope / np.linalg.norm(slope)
