@@ -170,6 +170,7 @@ class ClosedLoopCut(object):
 if __name__ == "__main__":
 
 
-    c = ClosedLoopCut(simulate=True)
+    c = ClosedLoopCut(simulate=False)
+    #c.initialize()
 
     c.doTask()
