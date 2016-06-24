@@ -68,7 +68,11 @@ class BoxMaskDetector:
         cur_position = self.get_pixel_from3D()
         next_position = self.get_pixel_from3D(position=self.robot_next_pose.position)
 
+        print "Current Pose", self.robot_pose.position,"Next Pose", self.robot_next_pose.position
+
         feedback = c.query(cur_position, next_position)
+
+        print "Current Pixel", cur_position,"Next Pixel", next_position, "feedback", feedback 
 
         if feedback == 1:
             self.feedback.publish("right")
@@ -180,6 +184,7 @@ if __name__ == "__main__":
 
     a = BoxMaskDetector((-250,-89))
     pt = a.get_pixel_from3D()
+    print pt
     img = np.copy(a.left_image)
     img[pt[1]-10:pt[1]+10,pt[0]-10:pt[0]+10, :] = [0,0,0]
 

@@ -280,9 +280,11 @@ class DVRKPlanarDomainHIRL(Domain):
 
         self.nextpos.publish(Pose(frame.position, frame.orientation))
 
+        print "Current Position", pos, "Next Position", Pose(frame.position, frame.orientation)
+
         self.psm1.move_cartesian_frame_linear_interpolation(frame, speed=0.01)
 
-        time.sleep(0.25)
+        time.sleep(0.5)
 
     def cut(self, closed_angle=2.0, open_angle=80.0, close_time=1.5, open_time=1.35):
         """

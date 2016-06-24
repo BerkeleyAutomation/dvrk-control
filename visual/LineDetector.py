@@ -120,11 +120,11 @@ class LineDetector(object):
             mask = np.zeros(gray.shape,np.uint8)
             cv2.drawContours(mask,[c],0,255,-1)
             mean_val = np.array(cv2.mean(hsv,mask = mask))
-            if np.max(mean_val) < 100:
+            if np.max(mean_val) < 100 and cv2.contourArea(c) > 5000:
                 continue
             else:
                 print cv2.contourArea(c)
-                if cv2.contourArea(c) < 2000:
+                if cv2.contourArea(c) < 5000:
                     cv2.drawContours(gray, [c], -1, (0, 0, 0), -1)
                 # else:
                     # pass
@@ -134,14 +134,14 @@ class LineDetector(object):
         return gray
 
 
-    def detect_relative_position(self, cur_position, next_position, image, ratio, rect_width=400, rect_height=50, show_plots=False):
+    def detect_relative_position(self, cur_position, next_position, image, ratio, rect_width=400, rect_height=30, show_plots=False):
         """
         Takes in current and next robot position in pixel space and a full image and returns whether or not the robot is to the right or left.
         """
         cur_position, next_position = np.array(cur_position), np.array(next_position)
         delta = next_position - cur_position
 
-        factor = 80 / np.linalg.norm(np.array(delta))
+        factor = 100 / np.linalg.norm(np.array(delta))
         next_position = cur_position + factor * np.array(delta)
 
         cur_position, next_position = np.array(cur_position), np.array(next_position)
