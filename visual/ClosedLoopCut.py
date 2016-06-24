@@ -25,13 +25,14 @@ class ClosedLoopCut(object):
         self.factor = factor
         self.nextpos = rospy.Publisher("/cutting/next_position_cartesian", Pose)
         self.simulate = simulate
+        self.traj = []
 
     """
     Method homes the robot to a given start position
     """
     def home_robot(self):
-        pos = [0.023580864372, 0.00699340564912, -0.0485527311586]
-        rot = [0.617571885272, 0.59489495214, 0.472153066551, 0.204392867261]
+        pos = [0.0333056007411, 0.0440999763421, -0.11067857918]#-0.0485527311586]
+        rot = [0.672831350856, 0.545250113857, 0.40137918567, 0.298152705764]
 
         if not self.simulate:
             self.psm1.move_cartesian_frame(self.get_frame_psm1(pos,rot))
@@ -165,6 +166,7 @@ class ClosedLoopCut(object):
             curpt = np.ravel(np.array(self.psm1.get_current_cartesian_position().position))
             self.pts[i,:] = curpt
             self.pts[i+1,:2] = savgol_filter(self.pts[:,:2], 5, 2, axis=0)[i+1,:]
+            self.traj.append(self.psm1.get_current_cartesian_position())
         
 
 if __name__ == "__main__":
@@ -174,3 +176,6 @@ if __name__ == "__main__":
     #c.initialize()
 
     c.doTask()
+
+    import pickle
+    pickle.dump(c.traj, open("traj-real.p","wb"))

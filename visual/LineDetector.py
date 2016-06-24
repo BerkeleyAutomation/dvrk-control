@@ -67,7 +67,7 @@ class LineDetector(object):
             cv2.imshow("Thresh", thresh)
             cv2.waitKey(0)
 
-        return self.remove_blobs(image, resized, thresh, ratio, show_plots), ratio
+        return self.remove_blobs(image, resized, gray, ratio, show_plots), ratio
 
 
 
@@ -94,11 +94,11 @@ class LineDetector(object):
             cv2.imshow("Thresh", thresh)
             cv2.waitKey(0)
 
-        return self.remove_blobs(image, resized, thresh, ratio, show_plots), ratio
-
+        return self.remove_blobs(image, resized, gray, ratio, show_plots), ratio
+    
     def remove_blobs(self, full_image, resized_image, gray, ratio, show_plots=False):
         if show_plots:
-            cv2.imshow("Thresh", gray)
+            cv2.imshow("Thresh2", gray)
             cv2.waitKey(0)
 
         cnts = cv2.findContours(gray.copy(), cv2.RETR_EXTERNAL,
@@ -106,20 +106,33 @@ class LineDetector(object):
         cnts = cnts[0] if imutils.is_cv2() else cnts[1]
 
         # loop over the contours
-
+        
         hsv = cv2.cvtColor(resized_image, cv2.COLOR_BGR2HSV)
+        # minv = 1000
+        # for c in cnts:
+        #     mask = np.zeros(gray.shape,np.uint8)
+        #     cv2.drawContours(mask,[c],0,255,-1)
+        #     mean_val = np.array(cv2.mean(hsv,mask = mask))
+        #     minv = min(mean_val[2], minv)
+        # print minv
+
         for c in cnts:
             mask = np.zeros(gray.shape,np.uint8)
             cv2.drawContours(mask,[c],0,255,-1)
             mean_val = np.array(cv2.mean(hsv,mask = mask))
             if np.max(mean_val) < 100:
-               continue
+                continue
             else:
-                cv2.drawContours(gray, [c], -1, (0, 0, 0), -1)
+                print cv2.contourArea(c)
+                if cv2.contourArea(c) < 2000:
+                    cv2.drawContours(gray, [c], -1, (0, 0, 0), -1)
+                # else:
+                    # pass
         if show_plots:
             cv2.imshow("a", gray)
             cv2.waitKey(0)
         return gray
+
 
     def detect_relative_position(self, cur_position, next_position, image, ratio, rect_width=400, rect_height=50, show_plots=False):
         """
@@ -214,16 +227,19 @@ class LineDetector(object):
         center_of_mass = best_center
         if center_of_mass == None:
             return float('inf') # Cannot find line
-        line_vector = center_of_mass - np.array(cur_position)
+        line_vector = (center_of_mass - np.array(cur_position)).astype(float)
         planned_vector = np.array(next_position) - np.array(cur_position)
 
         cpdt = np.cross(line_vector, planned_vector)
-
+        print line_vector, np.linalg.norm(line_vector), np.linalg.norm(planned_vector)
         line_vector /= np.linalg.norm(line_vector)
         planned_vector /= np.linalg.norm(planned_vector)
 
         dpdt = np.dot(line_vector, planned_vector)
         theta = np.arccos(dpdt) * 180 / np.pi
+        print "angle", theta, dpdt, line_vector, planned_vector
+        print "position", cur_position, next_position
+
         if theta < 20:
             return 0
 
@@ -240,12 +256,7 @@ class LineDetector(object):
     def query(self, cur_position, next_position):
         left_gray, ratio = self.__linedetector_fn(self.image, self.show_plots)
         rel = self.detect_relative_position(cur_position, next_position, left_gray, ratio, show_plots=self.show_plots)
-        if rel > 0:
-            return 1
-        elif rel == 0:
-            return 0
-        else:
-            return -1
+        return rel
 
 
 

@@ -31,27 +31,28 @@ def make_experiment(arm, exp_id=1, path="./Results/Tutorial/dvrk-planar"):
     opt["path"] = path
     
     #u = [{'x': 0.0381381038389, 'y': 0.0348028884984}, {'x': 0.0553447503026, 'y': 0.0523395529395}]
-    u = [{'x': 0.0193056007411, 'y': 0.0370999763421}, {'x': 0.0393056007411, 'y': 0.0370999763421}]
+    u = [{'x': 0.018931111948, 'y': 0.0259610378982}]
 
-    domain = DVRKPlanarDomain(arm, u[0], u[1])
+    #domain = DVRKPlanarDomain(arm, u[0], u[1])
+    domain = DVRKPlanarDomainHIRL(arm, u[0])
     opt["domain"] = domain
 
     # Representation
-    representation = RBF(domain, num_rbfs=1000,resolution_max=10, resolution_min=10,
-                         const_feature=False, normalize=True, seed=2)
+    representation = RBF(domain, num_rbfs=1000,resolution_max=25, resolution_min=25,
+                         const_feature=False, normalize=False, seed=2)
 
     # Policy
-    policy = eGreedy(representation, epsilon=0.2)
+    policy = eGreedy(representation, epsilon=0.1)
 
     # Agent
     opt["agent"] = Q_Learning(representation=representation, policy=policy,
                        discount_factor=domain.discount_factor,
-                       initial_learn_rate=0.875,
+                       initial_learn_rate=1.0,
                        learn_rate_decay_mode="boyan", boyan_N0=1000,
                        lambda_=0.0)
     opt["checks_per_policy"] = 1
-    opt["max_steps"] = 100
-    opt["num_policy_checks"] = 10
+    opt["max_steps"] = 400
+    opt["num_policy_checks"] = 2
     experiment = Experiment(**opt)
     return experiment, domain, policy, representation
 
@@ -66,8 +67,9 @@ if __name__ == '__main__':
     experiment.save()
     domain.showExploration()
 
-    u = [{'x': 0.0366444748244, 'y': 0.0289956700025, 'z': -0.130718432791}, {'x': 0.0570558504403, 'y': 0.0556373344712, 'z': -0.120846617934}]
-
+    #u = [{'x': 0.0366444748244, 'y': 0.0289956700025, 'z': -0.130718432791}, {'x': 0.0570558504403, 'y': 0.0556373344712, 'z': -0.120846617934}]
+    
+    """
     traj = []
     cur_state = domain.s0()[0]
     policy.turnOffExploration()
@@ -82,6 +84,7 @@ if __name__ == '__main__':
         cur_state = domain.step(a)[1]
 
     print traj
+    """
 
     #import pickle
 
