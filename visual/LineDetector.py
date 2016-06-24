@@ -61,13 +61,12 @@ class LineDetector(object):
         opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel2)
         closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel2)
         thresh = closing
+        # if self.show_plots:
+        #     cv2.imshow("Thresh", thresh)
+        #     cv2.waitKey(0)
 
+        return self.remove_blobs(image, resized, thresh, ratio, show_plots), ratio
 
-        if self.show_plots:
-            cv2.imshow("Thresh", thresh)
-            cv2.waitKey(0)
-
-        return self.remove_blobs(image, resized, gray, ratio, show_plots), ratio
 
 
 
